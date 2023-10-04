@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .containter{
+            display: flex;
+            flex-direction: row;
+            height: 50vh;
+        }
+        .left-column{
+            flex:5;
+            background-color: #ccc;
+        }
+        .right-column{
+            flex: 5;
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1 align="center">Image Denoising</h1>
+    <p/>
+    <div class="containter">
+        <div class="left-column"> <h2>Original Image</h2>
+            <img src="{{ original_image }}" width="400">
+        </div>
+        <div class="right-column"> <h2>Denoised Image</h2>
+            <img src="{{ denoised_image }}" width="400">
+        </div>
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*">
+        <input type="submit" value="Upload and Denoise">
+    </form>
+    <hr color="black">
+    
+</body>
+</html>
