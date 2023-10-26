@@ -1,39 +1,34 @@
-from flask import Flask, request, render_template, send_from_directory
 import cv2
 import os
+from flask import Flask, request, render_template, send_file
 
 app = Flask(__name__)
-UPLOAD_FOLDER = 'static/denoised_images'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def denoise_image(image_path):
-    # 이미지 로드 및 디노이징 처리
-    image = cv2.imread(image_path)
-    # 여기서 이미지 디노이징 작업을 수행하세요 (예: 미디언 필터 사용)
-    denoised_image = cv2.medianBlur(image, 5)
-    return denoised_image
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        if 'image' not in request.files:
-            return 'No file part'
-        image_file = request.files['image']
-        if image_file.filename == '':
-            return 'No selected file'
-        if image_file:
-            # 업로드된 이미지를 저장
-            filename = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
-            image_file.save(filename)
+        if 'file' not in request.files:
+            return "No file part"
+        
+        file = request.files['file']
 
-            # 디노이징한 이미지 생성
-            denoised_image = denoise_image(filename)
-            denoised_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'denoised_' + image_file.filename)
-            cv2.imwrite(denoised_filename, denoised_image)
+        if file.filename == '':
+            return "No selected file"
+        
+        if file:
+            # 저장된 이미지 경로
+            file_path = 'static/uploaded_image.jpg'
+            file.save(file_path)
 
-            return render_template('index.html', original_image=image_file.filename, denoised_image='denoised_' + image_file.filename)
+            # 이미지 처리 코드
+            input_image = cv2.imread(file_path)
+            denoised_image = cv2.fastNlMeansDenoisingColored(input_image, None, 10, 10, 7, 21)
+            scaling_factor = 2  # 2배 확대
+            new_height, new_width = denoised_image.shape[0] * scaling_factor, denoised_image.shape[1] * scaling_factor
+            improved_resolution_image = cv2.resize(denoised_image, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+            cv2.imwrite('static/improved_resolution_image.jpg', improved_resolution_image)
 
-    return render_template('index.html')
+    return render_template('Basic.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
