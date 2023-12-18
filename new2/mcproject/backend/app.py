@@ -8,9 +8,9 @@ from PIL import Image
 import io
 import base64
 import numpy as np
-#import torch
-#from torchvision.transforms.functional import normalize
+
 app = Flask(__name__)
+
 CORS(app)
 
 # 이미지를 저장할 디렉토리 설정
@@ -20,7 +20,27 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # OpenCV의 Super-Resolution 모듈 초기화
 sr = dnn_superres.DnnSuperResImpl_create()
 
+@app.route('/denoise', methods=['POST'])
+def denoise_image():
+    try:
+        image = request.files['image']
 
+        chageimage = cv2.imread(image)
+        fiximage = cv2.denoise_TVL1(chageimage)
+        
+        denoised_img = Image.fromarray(fiximage)
+        output_buffer2 = io.BytesIO()
+        denoised_img.save(output_buffer2, format='JPEG')
+        output_buffer2.seek(0)
+
+        result = {'denoised_img_url': 'data:image/jpeg;base64,' + base64.b64encode(output_buffer2.read()).decode('utf-8')}
+        print('Success')
+        return jsonify(result)
+    except Exception as e:
+        print('denising failed:', str(e))
+        return jsonify({'error': str(e)})
+
+    
 @app.route('/upscale', methods=['POST'])
 def upscale_image():
     try:
@@ -45,10 +65,11 @@ def upscale_image():
 
         # 이미지 업스케일
         path = './EDSR_x3.pb'  # 모델 파일의 경로를 업데이트하세요
-        print(f'모델을 불러오는 중: {path}')
+        print(f'Model loading: {path}')
         sr.readModel(path)
-        sr.setModel('edsr', 3)  # 3채널로 설정, 모델에 따라 다를 수 있습니다.
-        print('모델 불러오기 완료')
+        print('Model reading complete')
+        sr.setModel('edsr', 3)  
+        print('Model loading done')
        
         
         # 저장된 이미지를 읽기 위해 전체 경로 사용
@@ -57,11 +78,8 @@ def upscale_image():
         target = cv2.cvtColor(target_image, cv2.COLOR_BGR2RGB)
         
         # 이미지 업스케일 수행
+        print('Upscaleing')
         upscaled = sr.upsample(target)
-
-        # # 결과 이미지를 저장할 전체 경로 및 파일 이름 지정
-        # output_path = '../Upscaled/Test.png'  # 결과 이미지의 저장 경로를 업데이트하세요
-        # cv2.imwrite(output_path, upscaled)
 
         # 업스케일된 이미지를 클라이언트에게 전송
         upscaled_img = Image.fromarray(upscaled)
@@ -70,7 +88,7 @@ def upscale_image():
         output_buffer.seek(0)
 
         result = {'upscaled_image_url': 'data:image/jpeg;base64,' + base64.b64encode(output_buffer.read()).decode('utf-8')}
-        print('업스케일 성공')
+        print('Success')
         return jsonify(result)
     except Exception as e:
         print('업스케일 실패:', str(e))

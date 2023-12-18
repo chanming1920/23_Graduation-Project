@@ -1,5 +1,5 @@
 body {
-  margin: 0;
+  margin: 5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -17,7 +17,7 @@ code {
 
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap');
 *{
-    margin: 0;
+    margin: 1;
     padding: 0;
     box-sizing: border-box;
 }
@@ -30,7 +30,7 @@ code {
     font-family: 'Raleway', sans-serif;
     font-weight: bold;
 } */
-button{
+/* button{
     position: absolute;
     display: inline-block;
     padding: 25px 30px;
@@ -43,7 +43,7 @@ button{
     overflow: hidden;
     margin-right: 50px;
    
-}
+} */
 button:hover{
     background: #03e9f4;
     color: #050801;
@@ -113,3 +113,4 @@ a span:nth-child(3){
         right: 100%;
     }
 } */
+

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 const App = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -35,6 +36,7 @@ const App = () => {
   
       // Base64로 인코딩된 이미지를 화면에 표시
       setUpscaledImage(result.upscaled_image_url);
+      
     } catch (error) {
       console.error('Error during upscale:', error);
     }
@@ -53,7 +55,7 @@ const App = () => {
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {previewImage && <img src={previewImage} alt="Preview" style={{ maxWidth: '100px' }} />}
         </div>
-        <div>
+        <div align="center">
           <button onClick={handleUpscale} >업스케일</button>
         </div>
         
@@ -62,6 +64,7 @@ const App = () => {
           <p align="center">결과가 곧 출력됩니다....</p>
           {upscaledImage && <img src={upscaledImage} alt="Upscaled" style={{ maxWidth: '50%', width: '50%'}}/>}
         </div>
+        
     </div>
   );
 };
